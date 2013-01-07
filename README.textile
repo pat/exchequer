@@ -1,0 +1,74 @@
+h1. Exchequer
+
+A collection of helpful classes for a clean, object-oriented approach to dealing with Chargify.
+
+h2. Installation
+
+<pre><code>gem install exchequer</code></pre>
+
+h2. Usage
+
+This library currently comes with three classes: Card, Biller and ErrorMapper.
+
+h3. Card
+
+Card objects represent a Chargify credit card. It's built to be used in Rails forms, and has all the essential card attributes (first and last name, number, cvv, expiration month and year) plus billing address details (address, city, state, zip and country). This means you don't need to add misleading attribute accessors to your own models. At a basic level, it's much like any other ActiveModel object: you initialise it with a set of parameters (perhaps via @params@), and it responds to @#errors@.
+
+<pre><code>card = Exchequer::Card.new(
+  :first_name       => 'John',
+  :last_name        => 'Smith',
+  :full_number      => '1234567812345678',
+  :cvv              => '123',
+  :expiration_month => '10',
+  :expiration_year  => '2016',
+  :billing_address  => '1 Main Road',
+  :billing_city     => 'Melbourne',
+  :billing_state    => 'Victoria',
+  :billing_zip      => '3000',
+  :billing_country  => 'Australia'
+)</code></pre>
+
+It also provides a useful helper method @#to_hash@, which is useful if you want to feed it in to a Chargify::Subscription object's @credit_card_attributes@. The hash returned is much like what was passed in when initializing in the above example, except it always uses string keys.
+
+h3. Biller
+
+This is the most complicated piece of code - but it's nothing too tricky. It looks after the creation of Chargify customers and subscribers. You initialise it by passing through a Card object and some options - all of which are required: an email address for the customer, a unique reference for the customer, and the handle for the product the subscription is being applied to.
+
+<pre><code>biller = Exchequer::Biller.new card,
+  :email          => 'john@smith.com',
+  :reference      => 'customer-123',
+  :product_handle => 'default-subscription'</code></pre>
+
+When the biller object is created, you can then call @#charge@, which takes care of the communication with Chargify. It'll return true if everything is successful, but otherwise false - and will populate the card with any errors Chargify provides.
+
+It's worth noting that the customer's first and last name will be taken from the card object. Customising that may be an option in a later release.
+
+Once that's done, you can then call @#subscription_id@ to get the unique identifier for the subscription. It's probably worth storing that somewhere so you can interact with the subscription again at a later point.
+
+<pre><code>if biller.charged
+  customer.subscription_id = biller.subscription_id
+  customer.save
+else
+  # Use card.errors to determine why the subscription or customer could not
+  # be saved.
+end</code></pre>
+
+h3. ErrorMapper
+
+This has been built as an internal class for transferring errors from one ActiveModel object to another, with a few translations to shift errors on @:base@ to the appropriate attributes (eg: messages starting with 'Credit card number' are attached to the :full_number attribute). So, it's built with Card objects in mind, but if you find your own uses for it, wonderful.
+
+<pre><code>Exchequer::ErrorMapper.map(subscription, :to => card)</code></pre>
+
+h3. Putting it all together
+
+The last code example within the Biller details above should give you a good idea on how this library's expected to be used....
+
+h2. Contributing
+
+Patches are certainly welcome - though it's a good idea to contact me (either via email or through the GitHub issues on this project) to discuss what your planned changes are if they're beyond bug fixes. I want this project to reflect a clear and focused approach for dealing with Chargify (and possibly other payment gateways), and so I don't want people wasting their time on patches that I would consider inappropriate for that purpose.
+
+Yes, it's opinionated - but there's nothing stopping you from forking this code, modifying it, and using your version in whatever way you see fit.
+
+h2. Licence
+
+Copyright (c) 2012-2013, Exchequer is developed and maintained by Pat Allan, and is released under the open MIT Licence.
