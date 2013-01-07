@@ -45,7 +45,7 @@ It's worth noting that the customer's first and last name will be taken from the
 
 Once that's done, you can then call @#subscription_id@ to get the unique identifier for the subscription. It's probably worth storing that somewhere so you can interact with the subscription again at a later point.
 
-<pre><code>if biller.charged
+<pre><code>if biller.charge
   customer.subscription_id = biller.subscription_id
   customer.save
 else
