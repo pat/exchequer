@@ -1,3 +1,5 @@
+require 'active_model/validations'
+
 module Exchequer
   #
 end

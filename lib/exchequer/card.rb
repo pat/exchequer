@@ -1,7 +1,12 @@
 class Exchequer::Card
-   attr_accessor :first_name, :last_name, :full_number, :cvv,
+  include ActiveModel::Validations
+
+  attr_accessor :first_name, :last_name, :full_number, :cvv,
     :expiration_month, :expiration_year, :billing_address, :billing_city,
     :billing_state, :billing_zip, :billing_country
+
+  validates_presence_of :first_name, :last_name, :full_number, :cvv,
+    :expiration_month, :expiration_year
 
   def initialize(params = {})
     params ||= {}
