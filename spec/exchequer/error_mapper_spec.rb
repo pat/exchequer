@@ -60,6 +60,16 @@ describe Exchequer::ErrorMapper do
       }
     end
 
+    it "transfers CVV attributes" do
+      source.errors[:base] << 'CVV must be 3 or 4 characters long'
+
+      map_errors
+
+      destination.errors.should == {
+        :cvv => ['must be 3 or 4 characters long']
+      }
+    end
+
     it "transfers other errors to base" do
       source.errors[:base] << 'Gateway error'
 

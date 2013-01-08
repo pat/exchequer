@@ -1,10 +1,11 @@
 class Exchequer::ErrorMapper
   MAPPINGS = {
-    'Credit card expiration year'  => :expiration_year,
-    'Credit card expiration month' => :expiration_month,
-    'Credit card number'           => :full_number,
-    'First name'                   => :first_name,
-    'Last name'                    => :last_name
+    'Credit card expiration year:'  => :expiration_year,
+    'Credit card expiration month:' => :expiration_month,
+    'Credit card number:'           => :full_number,
+    'First name:'                   => :first_name,
+    'Last name:'                    => :last_name,
+    'CVV'                           => :cvv
   }
 
   def self.map(source, arguments)
@@ -17,10 +18,10 @@ class Exchequer::ErrorMapper
 
   def map_errors
     source.errors[:base].dup.each do |error|
-      label = MAPPINGS.keys.detect { |key| error[/^#{key}:/] }
+      label = MAPPINGS.keys.detect { |key| error[/^#{key}/] }
 
       if label
-        destination.errors[MAPPINGS[label]] << error.gsub(/^#{label}:\s+/, '')
+        destination.errors[MAPPINGS[label]] << error.gsub(/^#{label}\s+/, '')
       else
         destination.errors[:base] << error
       end
