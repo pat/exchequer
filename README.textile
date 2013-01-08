@@ -8,7 +8,7 @@ h2. Installation
 
 h2. Usage
 
-This library currently comes with three classes: Card, Biller and ErrorMapper.
+This library currently comes with four classes: Card, Biller, Subscription and ErrorMapper.
 
 h3. Card
 
@@ -51,6 +51,16 @@ Once that's done, you can then call @#subscription_id@ to get the unique identif
 else
   # Use card.errors to determine why the subscription or customer could not
   # be saved.
+end</code></pre>
+
+h3. Subscription
+
+This class is built for updating a given subscription's credit card details. You provide a Chargify subscription id and a card object with the new details, and it'll return true or false, depending on whether the update succeeds. When the update fails, all errors are added to the card object.
+
+<pre><code>if Exchequer::Subscription.update subscription_id, :card => card
+  # update was successful
+else
+  # update failed and card.errors should tell you why.
 end</code></pre>
 
 h3. ErrorMapper
