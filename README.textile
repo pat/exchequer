@@ -30,6 +30,8 @@ Card objects represent a Chargify credit card. It's built to be used in Rails fo
 
 It also provides a useful helper method @#to_hash@, which is useful if you want to feed it in to a Chargify::Subscription object's @credit_card_attributes@. The hash returned is much like what was passed in when initializing in the above example, except it always uses string keys.
 
+Thanks to ActiveModel, there's some basic validation built into this class, checking for the presence of first and last names, and the card number, expiry and cvv values, along with confirmation that the expiry values are current. Chargify does handle this stuff as well, but there's no point waiting on their web service when we don't need to.
+
 h3. Biller
 
 This is the most complicated piece of code - but it's nothing too tricky. It looks after the creation of Chargify customers and subscribers. You initialise it by passing through a Card object and some options - all of which are required: an email address for the customer, a unique reference for the customer, and the handle for the product the subscription is being applied to.
