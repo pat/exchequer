@@ -7,6 +7,7 @@ class Exchequer::Card
 
   validates_presence_of :first_name, :last_name, :full_number, :cvv,
     :expiration_month, :expiration_year
+  validate :card_cannot_be_expired
 
   def initialize(params = {})
     params ||= {}
@@ -33,5 +34,18 @@ class Exchequer::Card
       'billing_zip'      => billing_zip,
       'billing_country'  => billing_country
     }
+  end
+
+  private
+
+  def card_cannot_be_expired
+    return unless expiration_month.present? && expiration_year.present?
+
+    now = Time.zone.now
+    return if expiration_year.to_i > now.year
+    return if expiration_year.to_i == now.year &&
+      expiration_month.to_i >= now.month
+
+    errors.add :expiration_year, "Credit card expiry date is invalid"
   end
 end
